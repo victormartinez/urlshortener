@@ -2,6 +2,11 @@ from typing import Dict
 
 from decouple import config
 
+# CACHE
+CACHE_URL = config("CACHE_URL", "")
+SHORTENED_URLS_HASH_NAME = config("SHORTENED_URLS_HASH_NAME", "")
+
+
 # Database specifications
 DB_USER = config("DB_USER", "")
 DB_PASS = config("DB_PASS", "")
