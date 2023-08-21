@@ -1,6 +1,11 @@
 version: '3.9'
 
 services:
+  urlshorten_cache:
+    image: redis:7.2.0-alpine
+    ports:
+      - "6379:6379"
+
   urlshorten_db:
     image: postgres:14
     environment:

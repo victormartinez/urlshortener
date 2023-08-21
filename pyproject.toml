@@ -18,6 +18,7 @@ requests = "^2.31.0"
 alembic = "^1.11.1"
 structlog = "^23.1.0"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.19"}
+aioredis = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
