@@ -2,7 +2,6 @@ from typing import Optional
 
 from sqlalchemy import select, update
 
-from urlshorten.db import cache
 from urlshorten.db.base_repository import BaseRepository
 from urlshorten.db.models import DBShortenedUrl  # type: ignore[attr-defined]
 
@@ -14,24 +13,19 @@ class PersistShortenedUrlRepository(BaseRepository):
         db_object = DBShortenedUrl(code=code, destination_url=destination_url)
         self.db_session.add(db_object)
         await self.db_session.commit()
-        await cache.set_destination_url(code, destination_url)
 
 
 class GetShortenedUrlRepository(BaseRepository):
     async def execute(self, code: str) -> Optional[ShortenedUrl]:
-        destination_url, enabled = await cache.get_destination_url(code)
-        if not destination_url:
-            query = select(
-                DBShortenedUrl.destination_url, DBShortenedUrl.enabled
-            ).where(DBShortenedUrl.code == code)
-            result = await self.db_session.execute(query)
-            db_object = result.first()
-            if not db_object:
-                return None
-            # gently reminder: db_object is a tuple
-            destination_url, enabled = db_object[0], db_object[1]
-            await cache.set_destination_url(code, destination_url, enabled)
-
+        query = select(DBShortenedUrl.destination_url, DBShortenedUrl.enabled).where(
+            DBShortenedUrl.code == code
+        )
+        result = await self.db_session.execute(query)
+        db_object = result.first()
+        if not db_object:
+            return None
+        # gently reminder: db_object is a tuple
+        destination_url, enabled = db_object[0], db_object[1]
         return ShortenedUrl(
             code=code,
             destination_url=destination_url,
@@ -58,7 +52,4 @@ class UpdateShortenedUrlRepository(BaseRepository):
 
         result = await self.db_session.execute(query_update)
         await self.db_session.commit()
-        updated = result.rowcount  # type: ignore
-        if updated:
-            await cache.delete_destination_url(code)
-        return updated
+        return result.rowcount  # type: ignore

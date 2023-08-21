@@ -14,7 +14,5 @@ async def create(code: str, session: AsyncSession = Depends(get_session)) -> Non
 
 
 @router.get("/{code}", status_code=HTTPStatus.OK)
-async def resolve_url_code(
-    code: str, session: AsyncSession = Depends(get_session)
-) -> None:
+async def resolve_url_code(code: str) -> None:
     return None

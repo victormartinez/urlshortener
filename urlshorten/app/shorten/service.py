@@ -13,6 +13,8 @@ from urlshorten.app.shorten.data import (
     ShortenedUrl,
     UpdateShortenedUrlRepository,
 )
+from urlshorten.db import cache
+from urlshorten.db.session import get_session
 
 logger = logging.get_logger(__name__)
 
@@ -28,6 +30,7 @@ async def create(session: AsyncSession, destination_url: str) -> str:
         try:
             code = await _code_generator()
             await repository.run(code=code, destination_url=destination_url)
+            await cache.set_destination_url(code, destination_url)
             return code
         except AppException:
             logger.exception(
@@ -56,7 +59,20 @@ async def update(
             message=f"URL of code {code} was not updated.",
         )
 
+    await cache.delete_destination_url(code)
 
-async def retrieve(session: AsyncSession, code: str) -> ShortenedUrl:
-    repository = GetShortenedUrlRepository(session)
-    return await repository.run(code=code)
+
+async def retrieve(code: str) -> ShortenedUrl:  # type: ignore[return]
+    destination_url, enabled = await cache.get_destination_url(code)
+    if destination_url:
+        return ShortenedUrl(
+            code=code,
+            destination_url=destination_url,
+            enabled=enabled,
+        )
+
+    # gently reminder: just tries connection if cache miss
+    async for session in get_session():
+        repository = GetShortenedUrlRepository(session)
+        await cache.set_destination_url(code, destination_url, enabled)
+        return await repository.run(code=code)
