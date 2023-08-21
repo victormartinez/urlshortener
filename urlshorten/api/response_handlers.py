@@ -27,6 +27,7 @@ def _get_error_code(err_type: Enum) -> HTTPStatus:
         AppExceptionType.DATABASE_ERROR: HTTPStatus.INTERNAL_SERVER_ERROR,
         AppExceptionType.INTEGRITY_ERROR: HTTPStatus.CONFLICT,
         AppExceptionType.ENTITY_NOT_FOUND: HTTPStatus.NOT_FOUND,
+        AppExceptionType.DISABLED_RESOURCE: HTTPStatus.UNPROCESSABLE_ENTITY,
     }.get(err_type, HTTPStatus.INTERNAL_SERVER_ERROR)
 
 

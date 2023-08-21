@@ -6,6 +6,7 @@ class AppExceptionType(Enum):
     DATABASE_ERROR = "DATABASE_ERROR"
     INTEGRITY_ERROR = "INTEGRITY_ERROR"
     ENTITY_NOT_FOUND = "ENTITY_NOT_FOUND"
+    DISABLED_RESOURCE = "DISABLED_RESOURCE"
 
 
 class AppException(Exception):
