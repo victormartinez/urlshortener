@@ -8,7 +8,9 @@ import settings
 from infrastructure import logging
 from urlshorten.app.exceptions import AppException, AppExceptionType
 from urlshorten.app.shorten.data import (
+    GetShortenedUrlRepository,
     PersistShortenedUrlRepository,
+    ShortenedUrl,
     UpdateShortenedUrlRepository,
 )
 
@@ -53,3 +55,8 @@ async def update(
             type=AppExceptionType.ENTITY_NOT_FOUND,
             message=f"URL of code {code} was not updated.",
         )
+
+
+async def retrieve(session: AsyncSession, code: str) -> ShortenedUrl:
+    repository = GetShortenedUrlRepository(session)
+    return await repository.run(code=code)
