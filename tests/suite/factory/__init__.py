@@ -1,0 +1,1 @@
+from .shortened_url import DBShortenedUrlFactoryData
