@@ -5,28 +5,25 @@ from sqlalchemy import select, update
 from urlshorten.db import cache
 from urlshorten.db.base_repository import BaseRepository
 from urlshorten.db.models import DBShortenedUrl  # type: ignore[attr-defined]
+
 from .entities import ShortenedUrl
 
+
 class PersistShortenedUrlRepository(BaseRepository):
-    
     async def execute(self, code: str, destination_url: str) -> None:
-        db_object = DBShortenedUrl(
-            code=code, destination_url=destination_url
-        )
+        db_object = DBShortenedUrl(code=code, destination_url=destination_url)
         self.db_session.add(db_object)
         await self.db_session.commit()
         await cache.set_destination_url(code, destination_url)
 
 
 class GetShortenedUrlRepository(BaseRepository):
-
     async def execute(self, code: str) -> Optional[ShortenedUrl]:
         destination_url, enabled = await cache.get_destination_url(code)
         if not destination_url:
-            query = (
-                select(DBShortenedUrl.destination_url, DBShortenedUrl.enabled)
-                .where(DBShortenedUrl.code == code)
-            )
+            query = select(
+                DBShortenedUrl.destination_url, DBShortenedUrl.enabled
+            ).where(DBShortenedUrl.code == code)
             result = await self.db_session.execute(query)
             db_object = result.first()
             if not db_object:
@@ -35,15 +32,23 @@ class GetShortenedUrlRepository(BaseRepository):
             destination_url, enabled = db_object[0], db_object[1]
             await cache.set_destination_url(code, destination_url, enabled)
 
-        return ShortenedUrl(code=code, destination_url=destination_url, enabled=enabled)
+        return ShortenedUrl(
+            code=code,
+            destination_url=destination_url,
+            enabled=enabled,
+        )
 
 
 class UpdateShortenedUrlRepository(BaseRepository):
-    
-    async def execute(self, code: str, destination_url: Optional[str] = None, enabled: Optional[bool] = None) -> int:
+    async def execute(
+        self,
+        code: str,
+        destination_url: Optional[str] = None,
+        enabled: Optional[bool] = None,
+    ) -> int:
         if destination_url is None and enabled is None:
             return 0
-        
+
         query_update = update(DBShortenedUrl).where(DBShortenedUrl.code == code)
         if destination_url:
             query_update = query_update.values(destination_url=destination_url)

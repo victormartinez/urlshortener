@@ -20,9 +20,7 @@ class BaseRepository:
                 message="Integrity error regarding data.",
             )
         except SQLAlchemyError as exc:
-            raise AppException(
-                type=AppExceptionType.DATABASE_ERROR, message=str(exc)
-            )
+            raise AppException(type=AppExceptionType.DATABASE_ERROR, message=str(exc))
 
     @abstractmethod
     async def execute(self, *args: Any, **kwargs: Any) -> Any:  # type: ignore

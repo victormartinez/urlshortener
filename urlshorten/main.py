@@ -4,12 +4,12 @@ from typing import Any, Dict
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 
-from urlshorten.api.urls.resources import router
 from urlshorten.api.exception_handlers import (
     bad_request_handler,
     http_exception_handler,
     validation_exception_handler,
 )
+from urlshorten.api.urls.resources import router
 from urlshorten.app.exceptions import AppException
 
 

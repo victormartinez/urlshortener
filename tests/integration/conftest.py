@@ -3,10 +3,10 @@ from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm.session import sessionmaker
 
+from settings import build_database_uri, build_engine_config, build_session_config
 from urlshorten.db.models import DBShortenedUrl
 from urlshorten.db.session import SessionLocal
 from urlshorten.main import app
-from settings import build_database_uri, build_engine_config, build_session_config
 
 engine = create_async_engine(build_database_uri(), **build_engine_config())
 TestingSessionLocal = sessionmaker(

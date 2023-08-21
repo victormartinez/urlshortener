@@ -1,7 +1,7 @@
 import asyncio
 
-from urlshorten.exec.main import get_filepaths, load_file, parse_args
 from infrastructure import logging
+from urlshorten.exec.main import get_filepaths, load_file, parse_args
 
 logger = logging.get_logger(__name__)
 
