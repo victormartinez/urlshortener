@@ -13,7 +13,7 @@ class BaseModel(Base):
     __abstract__ = True
 
     id = Column(
-        postgresql.UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
+        postgresql.UUID(as_uuid=True), unique=True, primary_key=True, index=True, default=uuid.uuid4
     )
     created_at = Column(DateTime(timezone=True), server_default=utcnow())
     updated_at = Column(
