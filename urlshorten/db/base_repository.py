@@ -16,7 +16,7 @@ class BaseRepository:
             return await self.execute(*args, **kwargs)
         except IntegrityError:
             raise AppException(
-                type=AppExceptionType.DATABASE_INTEGRITY_ERROR,
+                type=AppExceptionType.INTEGRITY_ERROR,
                 message="Integrity error regarding data.",
             )
         except SQLAlchemyError as exc:

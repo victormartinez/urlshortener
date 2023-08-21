@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 class AppExceptionType(Enum):
     DATABASE_ERROR = "DATABASE_ERROR"
-    DATABASE_INTEGRITY_ERROR = "DATABASE_INTEGRITY_ERROR"
+    INTEGRITY_ERROR = "INTEGRITY_ERROR"
     ENTITY_NOT_FOUND = "ENTITY_NOT_FOUND"
 
 

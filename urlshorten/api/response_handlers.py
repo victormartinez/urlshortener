@@ -25,7 +25,7 @@ class ResponseBody(BaseModel):
 def _get_error_code(err_type: Enum) -> HTTPStatus:
     return {  # type: ignore
         AppExceptionType.DATABASE_ERROR: HTTPStatus.INTERNAL_SERVER_ERROR,
-        AppExceptionType.DATABASE_INTEGRITY_ERROR: HTTPStatus.CONFLICT,
+        AppExceptionType.INTEGRITY_ERROR: HTTPStatus.CONFLICT,
         AppExceptionType.ENTITY_NOT_FOUND: HTTPStatus.NOT_FOUND,
     }.get(err_type, HTTPStatus.INTERNAL_SERVER_ERROR)
 
