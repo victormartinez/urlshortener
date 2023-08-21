@@ -1,12 +1,16 @@
 import random
 import string
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import settings
 from infrastructure import logging
 from urlshorten.app.exceptions import AppException, AppExceptionType
-from urlshorten.app.shorten.data import PersistShortenedUrlRepository
+from urlshorten.app.shorten.data import (
+    PersistShortenedUrlRepository,
+    UpdateShortenedUrlRepository,
+)
 
 logger = logging.get_logger(__name__)
 
@@ -34,3 +38,18 @@ async def create(session: AsyncSession, destination_url: str) -> str:
         type=AppExceptionType.INTEGRITY_ERROR,
         message="It was not possible to generate a code for the destination url.",
     )
+
+
+async def update(
+    session: AsyncSession,
+    code: str,
+    destination_url: Optional[str] = None,
+    enabled: Optional[bool] = None,
+) -> None:
+    repository = UpdateShortenedUrlRepository(session)
+    updated = await repository.run(code, destination_url, enabled)
+    if not updated:
+        raise AppException(
+            type=AppExceptionType.ENTITY_NOT_FOUND,
+            message=f"URL of code {code} was not updated.",
+        )
