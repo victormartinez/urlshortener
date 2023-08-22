@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import settings
+from infrastructure import logging
 from urlshorten.api.urls.schema import (
     CodeUrlOut,
     DestinationUrlIn,
@@ -14,14 +16,28 @@ from urlshorten.app.exceptions import AppException, AppExceptionType
 from urlshorten.db.session import get_session
 
 router = APIRouter(tags=["urls"])
+logger = logging.get_logger(__name__)
 
 
 @router.post("/", status_code=HTTPStatus.CREATED, response_model=CodeUrlOut)
 async def create(
     payload: DestinationUrlIn, session: AsyncSession = Depends(get_session)
 ) -> CodeUrlOut:
-    code = await shorten.create(session, payload.destination_url)
-    return CodeUrlOut(code=code)
+    for attempt_number in range(settings.URL_CODE_COLLISION_ATTEMPTS):
+        try:
+            code = await shorten.create(session, payload.destination_url)
+            return CodeUrlOut(code=code)
+        except AppException:
+            logger.exception(
+                "error shortening url",
+                destination_url=payload.destination_url,
+                attempt=attempt_number,
+            )
+
+    raise AppException(
+        type=AppExceptionType.INTEGRITY_ERROR,
+        message="It was not possible to generate a code for the destination url.",
+    )
 
 
 @router.get(
@@ -49,4 +65,11 @@ async def update_destination_url(
     payload: UpdateDestinationUrlIn,
     session: AsyncSession = Depends(get_session),
 ) -> None:
-    await shorten.update(session, code, payload.destination_url, payload.enabled)
+    updated = await shorten.update(
+        session, code, payload.destination_url, payload.enabled
+    )
+    if not updated:
+        raise AppException(
+            type=AppExceptionType.ENTITY_NOT_FOUND,
+            message="URL not found.",
+        )
