@@ -46,11 +46,11 @@ async def retrieve(code: str) -> Optional[ShortenedUrl]:  # type: ignore[return]
         # gently reminder: just tries connection if cache miss
         async for session in get_session():
             repository = GetShortenedUrlRepository(session)
-            result = await repository.run(code=code)
+            result: Optional[ShortenedUrl] = await repository.run(code=code)
             if not result:
                 return None
 
-            destination_url, enabled = result[0], result[1]
+            destination_url, enabled = result.destination_url, result.enabled
 
     await cache.set_destination_url(code, destination_url, enabled)
     return ShortenedUrl(
