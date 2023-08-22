@@ -1,14 +1,15 @@
 import pytest
 
-from tests.suite.factory import DBShortenedUrlFactoryData
 from tests.suite.database import DatabaseUtils
+from tests.suite.factory import DBShortenedUrlFactoryData
 from urlshorten.app.exceptions import AppException, AppExceptionType
-from urlshorten.db import DBShortenedUrl
 from urlshorten.app.shorten.data import (
-    ShortenedUrl,
-    PersistShortenedUrlRepository,
     GetShortenedUrlRepository,
+    PersistShortenedUrlRepository,
+    ShortenedUrl,
 )
+from urlshorten.db import DBShortenedUrl
+
 
 async def test_persist_shortened_url(session):
     CODE, DESTINATION = "a1B2c3", "https://google.com"

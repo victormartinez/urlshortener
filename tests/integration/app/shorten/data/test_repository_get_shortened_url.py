@@ -1,7 +1,7 @@
-from tests.suite.factory import DBShortenedUrlFactoryData
 from tests.suite.database import DatabaseUtils
-from urlshorten.db import DBShortenedUrl
+from tests.suite.factory import DBShortenedUrlFactoryData
 from urlshorten.app.shorten.data import GetShortenedUrlRepository, ShortenedUrl
+from urlshorten.db import DBShortenedUrl
 
 
 async def test_get_shortened_url(session):

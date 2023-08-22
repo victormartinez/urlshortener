@@ -32,7 +32,7 @@ async def override_async_session():
     session = TestingSessionLocal()
     try:
         yield session
-    except:
+    except Exception:
         await session.rollback()
         raise
     finally:

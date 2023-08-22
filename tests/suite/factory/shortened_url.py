@@ -7,6 +7,7 @@ from urlshorten.db.models import DBShortenedUrl
 
 faker = FakerFactory.create("pt_BR")
 
+
 class DBShortenedUrlFactoryData(factory.Factory):
     class Meta:
         model = DBShortenedUrl

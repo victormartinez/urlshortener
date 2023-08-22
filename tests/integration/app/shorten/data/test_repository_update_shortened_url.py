@@ -1,11 +1,11 @@
-from tests.suite.factory import DBShortenedUrlFactoryData
 from tests.suite.database import DatabaseUtils
-from urlshorten.db import DBShortenedUrl
+from tests.suite.factory import DBShortenedUrlFactoryData
 from urlshorten.app.shorten.data import (
-    UpdateShortenedUrlRepository, 
     GetShortenedUrlRepository,
     ShortenedUrl,
+    UpdateShortenedUrlRepository,
 )
+from urlshorten.db import DBShortenedUrl
 
 
 async def test_update_shortened_url_destination_url_and_enabled(session):
