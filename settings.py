@@ -6,7 +6,7 @@ from decouple import config
 CACHE_URL = config("CACHE_URL", "")
 SHORTENED_URLS_HASH_NAME = config("SHORTENED_URLS_HASH_NAME", "")
 URL_CODE_COLLISION_ATTEMPTS = config("URL_CODE_COLLISION_ATTEMPTS", default=3, cast=int)
-URL_CODE_SIZE = config("URL_CODE_SIZE", default=8)
+URL_CODE_SIZE = config("URL_CODE_SIZE", default=8, cast=int)
 
 # Database specifications
 DB_USER = config("DB_USER", "")

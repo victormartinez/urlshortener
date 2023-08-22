@@ -27,15 +27,20 @@ async def create(
 @router.get(
     "/{code}",
     status_code=HTTPStatus.PERMANENT_REDIRECT,
-    response_model=RedirectResponse,
 )
 async def resolve_url_code(code: str) -> RedirectResponse:
     shortened_url_object = await shorten.retrieve(code)
-    if shortened_url_object.enabled:
-        return RedirectResponse(url=shortened_url_object.destination_url)
-    raise AppException(
-        type=AppExceptionType.DISABLED_RESOURCE, message="The related URL is disabled."
-    )
+    if not shortened_url_object:
+        raise AppException(
+            type=AppExceptionType.ENTITY_NOT_FOUND, message="URL not found"
+        )
+    if not shortened_url_object.enabled:
+        raise AppException(
+            type=AppExceptionType.DISABLED_RESOURCE,
+            message="The related URL is disabled.",
+        )
+
+    return RedirectResponse(url=shortened_url_object.destination_url)
 
 
 @router.patch("/{code}", status_code=HTTPStatus.OK)
