@@ -19,9 +19,9 @@ logger = logging.get_logger(__name__)
 
 
 async def create(session: AsyncSession, destination_url: str) -> str:
-    repository = PersistShortenedUrlRepository(session)
     chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
     code = "".join(random.choices(chars, k=settings.URL_CODE_SIZE))  # nosec: B311
+    repository = PersistShortenedUrlRepository(session)
     await repository.run(code=code, destination_url=destination_url)
     await cache.set_destination_url(code, destination_url)
     return code
@@ -30,11 +30,16 @@ async def create(session: AsyncSession, destination_url: str) -> str:
 async def update(
     session: AsyncSession,
     code: str,
+    *,
     destination_url: Optional[str] = None,
     enabled: Optional[bool] = None,
 ) -> int:
     repository = UpdateShortenedUrlRepository(session)
-    updated = await repository.run(code, destination_url, enabled)
+    updated = await repository.run(
+        code, 
+        destination_url=destination_url,
+        enabled=enabled
+    )
     if updated:
         await cache.delete_destination_url(code)
     return updated

@@ -37,6 +37,7 @@ class UpdateShortenedUrlRepository(BaseRepository):
     async def execute(
         self,
         code: str,
+        *,
         destination_url: Optional[str] = None,
         enabled: Optional[bool] = None,
     ) -> int:
