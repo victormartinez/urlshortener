@@ -42,7 +42,7 @@ async def create(
 
 @router.get(
     "/{code}",
-    status_code=HTTPStatus.PERMANENT_REDIRECT,
+    status_code=HTTPStatus.TEMPORARY_REDIRECT,
 )
 async def resolve_url_code(code: str) -> RedirectResponse:
     shortened_url_object = await shorten.retrieve(code)
