@@ -36,9 +36,7 @@ async def update(
 ) -> int:
     repository = UpdateShortenedUrlRepository(session)
     updated = await repository.run(
-        code, 
-        destination_url=destination_url,
-        enabled=enabled
+        code, destination_url=destination_url, enabled=enabled
     )
     if updated:
         await cache.delete_destination_url(code)

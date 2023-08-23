@@ -66,10 +66,7 @@ async def update_destination_url(
     session: AsyncSession = Depends(get_session),
 ) -> None:
     updated = await shorten.update(
-        session,
-        code, 
-        destination_url=payload.destination_url,
-        enabled=payload.enabled
+        session, code, destination_url=payload.destination_url, enabled=payload.enabled
     )
     if not updated:
         raise AppException(
