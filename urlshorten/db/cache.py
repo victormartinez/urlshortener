@@ -15,7 +15,7 @@ def protect_connection(func: Callable) -> Callable:
 
     async def wrapped(*args, **kwargs):  # type: ignore[no-untyped-def]
         try:
-            await func(*args, **kwargs)
+            return await func(*args, **kwargs)
         except aioredis.exceptions.ConnectionError:
             logger.exception("redis connection error")
 
