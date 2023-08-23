@@ -5,7 +5,7 @@ import aioredis
 import settings
 from infrastructure import logging
 
-_redis_client = aioredis.from_url(settings.CACHE_URL)  # type: ignore[no-untyped-call]
+_redis = aioredis.from_url(settings.CACHE_URL)  # type: ignore[no-untyped-call]
 _SEPARATOR_CHAR = "|"
 logger = logging.get_logger(__name__)
 
@@ -26,18 +26,21 @@ def protect_connection(func: Callable) -> Callable:
 async def set_destination_url(
     code: str, destination_url: str, enabled: bool = True
 ) -> None:
-    value = f"{destination_url}{_SEPARATOR_CHAR}{enabled}"
-    await _redis_client.hset(settings.SHORTENED_URLS_HASH_NAME, code, value)
+    async with _redis.client() as conn:
+        value = f"{destination_url.strip()}{_SEPARATOR_CHAR}{enabled}"
+        await conn.hset(settings.SHORTENED_URLS_HASH_NAME, code, value)
 
 
 @protect_connection
 async def get_destination_url(code: str) -> Tuple[str, bool]:
-    result = await _redis_client.hget(settings.SHORTENED_URLS_HASH_NAME, code)
-    if not result:
-        return "", False
-    return result.decode("utf-8").split(_SEPARATOR_CHAR)
+    async with _redis.client() as conn:
+        result = await conn.hget(settings.SHORTENED_URLS_HASH_NAME, code.strip())
+        if not result:
+            return "", False
+        return result.decode("utf-8").split(_SEPARATOR_CHAR)
 
 
 @protect_connection
 async def delete_destination_url(code: str) -> None:
-    await _redis_client.hdel(settings.SHORTENED_URLS_HASH_NAME, code)
+    async with _redis.client() as conn:
+        await conn.hdel(settings.SHORTENED_URLS_HASH_NAME, code.strip())
