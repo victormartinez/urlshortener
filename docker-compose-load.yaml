@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  urlshorten_nginx_load:
+    build: ./nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - urlshorten_app_load
+    networks:
+      - urlshorten_network
+  
+  urlshorten_app_load:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn --host 0.0.0.0 urlshorten.main:app
+    env_file:
+      - .env.load
+    ports:
+      - "8000"
+    networks:
+      - urlshorten_network
+    depends_on:
+      - urlshorten_db_load
+
+  urlshorten_cache_load:
+    image: redis:7.2.0-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - urlshorten_network
+
+  urlshorten_db_load:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - urlshorten_network
+
+networks:
+  urlshorten_network:
+    driver: bridge

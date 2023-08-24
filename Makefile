@@ -16,11 +16,14 @@ help:
 	@echo "		clean - Remove temp files."
 	@echo "		down - Stop containers."
 	@echo "		run - Run application in development mode."
-	@echo "		unit-test - Run unit tests."
-	@echo "		integration-test - Run integration tests."
 	@echo "		coverage - Run tests and gather coverage data."
 	@echo "		up - Start containers."
-	@echo "		run_local_container - Run project via docker."
+	@echo "	Test:"
+	@echo "		unit-test - Run unit tests."
+	@echo "		integration-test - Run integration tests."
+	@echo "		load-test - Run load test."
+	@echo "		load-test-build - Build containers images for load test."
+	@echo "		load-test-up - Run application containers for load test."
 
 
 .PHONY: format
@@ -123,3 +126,15 @@ db_test_drop:
 .PHONY: db_drop
 db_drop:
 	docker container ls -a | grep urlshorten_db | awk '{print $$1}' | xargs docker container stop | xargs docker container rm
+
+.PHONY: load-test
+load-test:
+	k6 run tests/load/script.js
+
+.PHONY: load-test-build
+load-test-build:
+	docker-compose --file docker-compose-load.yaml build --no-cache
+
+.PHONY: load-test-up
+load-test-up:
+	docker-compose --file docker-compose-load.yaml up --scale urlshorten_app_load=5

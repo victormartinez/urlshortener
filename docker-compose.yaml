@@ -5,6 +5,8 @@ services:
     image: redis:7.2.0-alpine
     ports:
       - "6379:6379"
+    networks:
+      - urlshorten_network
 
   urlshorten_db:
     image: postgres:14
@@ -13,8 +15,10 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    networks:
+      - urlshorten_network
 
-  pgadmin:
+  urlshorten_pgadmin:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: "dev@dev.com"
@@ -25,3 +29,9 @@ services:
       - urlshorten_db
     volumes:
       - ./volumes/pgadmin:/var/lib/pgadmin
+    networks:
+      - urlshorten_network
+
+networks:
+  urlshorten_network:
+    driver: bridge

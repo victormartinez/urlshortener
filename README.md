@@ -9,7 +9,7 @@ This is a project responsible for shortening URLs.
 
 ## Architectural Decision
 
-A report is provided at [./docs](./docs) directory.
+A report is provided at [./docs](./docs) directory along with a load test result.
 
 ## Getting Started
 
@@ -37,7 +37,25 @@ A report is provided at [./docs](./docs) directory.
 
 - Application: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - API Doc: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- PGAdmin (user: `dev@dev.com` pass: `postgres`): [http://127.0.0.1:8080](http://127.0.0.1:8080)
+- PGAdmin (user: `dev@dev.com` pass: `postgres`): [http://127.0.0.1:8080](http://127.0.0.1:8081)
+
+## Load Test
+
+1. Build the container images
+    ```
+    make load-test-build
+    ```
+
+2. Start containers
+    ```
+    make load-test-up
+    ```
+
+3. Run the load test (requires [k6.io](https://k6.io/))
+    ```
+    make load-test
+    ```
+
 
 ### Main Commands
 
