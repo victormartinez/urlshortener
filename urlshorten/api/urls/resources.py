@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Optional, Union
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
@@ -9,6 +10,7 @@ from infrastructure import logging
 from urlshorten.api.urls.schema import (
     CodeUrlOut,
     DestinationUrlIn,
+    DestinationUrlOut,
     UpdateDestinationUrlIn,
 )
 from urlshorten.app import shorten
@@ -40,11 +42,8 @@ async def create(
     )
 
 
-@router.get(
-    "/{code}",
-    status_code=HTTPStatus.TEMPORARY_REDIRECT,
-)
-async def resolve_url_code(code: str) -> RedirectResponse:
+@router.get("/{code}")
+async def resolve_url_code(code: str, redirect: Optional[bool] = True):
     shortened_url_object = await shorten.retrieve(code)
     if not shortened_url_object:
         raise AppException(
@@ -56,7 +55,9 @@ async def resolve_url_code(code: str) -> RedirectResponse:
             message="The related URL is disabled.",
         )
 
-    return RedirectResponse(url=shortened_url_object.destination_url)
+    if redirect is True:
+        return RedirectResponse(url=shortened_url_object.destination_url)
+    return DestinationUrlOut(destination_url=shortened_url_object.destination_url)
 
 
 @router.patch("/{code}", status_code=HTTPStatus.OK)

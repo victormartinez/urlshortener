@@ -12,6 +12,15 @@ class DestinationUrlIn(BaseModel):
     )
 
 
+class DestinationUrlOut(BaseModel):
+    destination_url: str = Field(
+        ...,
+        title="URL",
+        description="Specifies the url.",
+        example="https://google.com",
+    )
+
+
 class CodeUrlOut(BaseModel):
     code: str = Field(
         ...,

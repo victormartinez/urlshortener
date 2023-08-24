@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Optional
 
 import aioredis
 
@@ -16,8 +16,9 @@ def protect_connection(func: Callable) -> Callable:
     async def wrapped(*args, **kwargs):  # type: ignore[no-untyped-def]
         try:
             return await func(*args, **kwargs)
-        except aioredis.exceptions.ConnectionError:
-            logger.exception("redis connection error")
+        except aioredis.exceptions.RedisError:
+            logger.exception("redis error")
+            return None
 
     return wrapped
 
@@ -32,7 +33,7 @@ async def set_destination_url(
 
 
 @protect_connection
-async def get_destination_url(code: str) -> Tuple[str, bool]:
+async def get_destination_url(code: str) -> Optional[Tuple[str, bool]]:
     async with _redis.client() as conn:
         result = await conn.hget(settings.SHORTENED_URLS_HASH_NAME, code.strip())
         if not result:
