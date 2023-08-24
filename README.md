@@ -41,6 +41,8 @@ A report is provided at [./docs](./docs) directory along with a load test result
 
 ## Load Test
 
+Load test is performed using [k6.io](https://k6.io/) and the setup script is available at [./tests/load/script.js](./tests/load/script.js).
+
 1. Build the container images
     ```
     make load-test-build
