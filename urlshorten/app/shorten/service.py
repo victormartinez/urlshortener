@@ -46,7 +46,7 @@ async def update(
 async def retrieve(code: str) -> Optional[ShortenedUrl]:  # type: ignore[return]
     destination_url, enabled = None, None
     result = await cache.get_destination_url(code)
-    if result:
+    if result is not None and result[0]:
         destination_url, enabled = result[0], result[1]
     else:
         # gently reminder: just tries connection if cache miss
